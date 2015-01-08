@@ -213,8 +213,7 @@
         activityIndicatorView.frame = activityIndicatorViewFrame;
         {
             UIView * const activityIndicatorViewBackground = [[UIView alloc] initWithFrame:CGRectInset(_activityIndicatorView.bounds, -4, -4)];
-            //activityIndicatorViewBackground.backgroundColor = [UIColor colorWithWhite:1 alpha:.7];
-            activityIndicatorViewBackground.backgroundColor = [UIColor clearColor];
+            activityIndicatorViewBackground.backgroundColor = [UIColor colorWithWhite:1 alpha:.7];
             activityIndicatorViewBackground.layer.masksToBounds = YES;
             activityIndicatorViewBackground.layer.cornerRadius = 6;
             [activityIndicatorView insertSubview:activityIndicatorViewBackground atIndex:0];
@@ -229,8 +228,7 @@
         pullInstructionsLabel.text = @"Pull To Refresh";
         [pullInstructionsLabel sizeToFit];
         pullInstructionsLabel.frame = bounds;
-        //pullInstructionsLabel.backgroundColor = [UIColor colorWithWhite:1 alpha:.7];
-        pullInstructionsLabel.backgroundColor = [UIColor clearColor];
+        pullInstructionsLabel.backgroundColor = [UIColor colorWithWhite:1 alpha:.7];
         pullInstructionsLabel.layer.masksToBounds = YES;
         pullInstructionsLabel.layer.cornerRadius = 6;
         [self addSubview:pullInstructionsLabel];
@@ -243,8 +241,7 @@
         releaseInstructionsLabel.text = @"Release To Refresh";
         [releaseInstructionsLabel sizeToFit];
         releaseInstructionsLabel.frame = bounds;
-        //releaseInstructionsLabel.backgroundColor = [UIColor colorWithWhite:1 alpha:.7];
-        releaseInstructionsLabel.backgroundColor = [UIColor clearColor];
+        releaseInstructionsLabel.backgroundColor = [UIColor colorWithWhite:1 alpha:.7];
         releaseInstructionsLabel.layer.masksToBounds = YES;
         releaseInstructionsLabel.layer.cornerRadius = 6;
         [self addSubview:releaseInstructionsLabel];
