@@ -30,6 +30,8 @@ typedef enum STPullToRefreshState {
 @protocol STPullToRefreshHelperView <NSObject>
 + (CGFloat)naturalHeight;
 - (void)setState:(STPullToRefreshState)state animated:(BOOL)animated;
+@optional
+- (void)setTriggerProgress:(CGFloat)progress;
 @end
 
 @interface STPullToRefreshHelperView : UIView<STPullToRefreshHelperView>

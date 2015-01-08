@@ -28,7 +28,7 @@
     if ((self = [super init])) {
         _direction = direction;
         _delegate = delegate;
-
+        
         viewClass = viewClass ?: [STPullToRefreshHelperView class];
         CGFloat const viewHeight = [viewClass naturalHeight];
         _view = [[viewClass alloc] initWithFrame:(CGRect){ .size = { 320, viewHeight } }];
@@ -42,13 +42,13 @@
         [_scrollView removeObserver:self forKeyPath:@"contentSize"];
         [_scrollView removeObserver:self forKeyPath:@"contentOffset"];
         [_scrollView removeObserver:self forKeyPath:@"contentInset"];
-
+        
         [_view removeFromSuperview];
-
+        
         _scrollView = scrollView;
         UIView * const view = self.view;
         CGFloat const viewHeight = [view.class naturalHeight];
-
+        
         switch (_direction) {
             case STPullToRefreshDirectionUp: {
                 CGRect const frame = (CGRect){ .origin = { .y = -viewHeight }, .size = { .width = scrollView.bounds.size.width, .height = viewHeight } };
@@ -57,7 +57,7 @@
                 [scrollView addSubview:view];
             } break;
         }
-
+        
         [scrollView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:NULL];
         [scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:NULL];
         [scrollView addObserver:self forKeyPath:@"contentInset" options:NSKeyValueObservingOptionNew context:NULL];
@@ -69,10 +69,10 @@
     if (_state != state) {
         UIScrollView * const scrollView = self.scrollView;
         STPullToRefreshState const oldState = _state;
-
+        
         _state = state;
         [_view setState:state animated:animated];
-
+        
         [self modifyScrollView:scrollView forState:state oldState:oldState animated:animated];
     }
 }
@@ -86,7 +86,7 @@
     CGFloat const viewHeight = [view.class naturalHeight];
     STPullToRefreshDirection const direction = _direction;
     STPullToRefreshState const state = _state;
-
+    
     if (object == scrollView) {
         CGFloat const scrollViewOriginY = contentOffset.y + contentInset.top;
         CGFloat viewOriginY;
@@ -95,7 +95,7 @@
         } else {
             viewOriginY = (-viewHeight < scrollViewOriginY) ? scrollViewOriginY - viewHeight : scrollViewOriginY;
         }
-
+        
         CGFloat viewVisibility;
         switch (state) {
             case STPullToRefreshStateIdle:
@@ -114,10 +114,14 @@
         view.center = viewCenter;
         view.alpha = viewVisibility;
         
+        if ([view respondsToSelector:@selector(setTriggerProgress:)]) {
+            [view setTriggerProgress:viewVisibility];
+        }
+        
         if ([keyPath isEqualToString:@"contentOffset"]) {
             if (state != STPullToRefreshStateLoading) {
                 if (scrollView.isDragging) {
-                    CGFloat const pullDistance = viewHeight;
+                    CGFloat const pullDistance = viewHeight + 20;
                     switch (direction) {
                         case STPullToRefreshDirectionUp: {
                             STPullToRefreshState newState;
@@ -163,7 +167,7 @@
     } else if (state != STPullToRefreshStateLoading && oldState == STPullToRefreshStateLoading) {
         verticalInsetModifier = -1;
     }
-
+    
     UIView<STPullToRefreshHelperView> * const view = self.view;
     CGFloat const viewHeight = [view.class naturalHeight];
     CGFloat const verticalInset = viewHeight;
@@ -173,13 +177,13 @@
             edgeInsets.top += verticalInset * verticalInsetModifier;
             break;
     }
-
+    
     void(^animations)(void) = ^{
         [scrollView setContentInset:edgeInsets];
     };
-
+    
     if (animated) {
-        [UIView animateWithDuration:1./3. delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionAllowUserInteraction animations:animations completion:nil];
+        [UIView animateWithDuration:1./3. delay:0.0f options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionAllowUserInteraction animations:animations completion:nil];
     } else {
         animations();
     }
@@ -204,7 +208,7 @@
         CGRect const bounds = self.bounds;
         self.backgroundColor = [UIColor clearColor];
         self.opaque = NO;
-
+        
         UIActivityIndicatorView * const activityIndicatorView = _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         activityIndicatorView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleBottomMargin;
         CGRect activityIndicatorViewFrame = activityIndicatorView.frame;
@@ -219,7 +223,7 @@
             [activityIndicatorView insertSubview:activityIndicatorViewBackground atIndex:0];
         }
         [self addSubview:activityIndicatorView];
-
+        
         UILabel * const pullInstructionsLabel = _pullInstructionsLabel = [[UILabel alloc] initWithFrame:bounds];
         pullInstructionsLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
         pullInstructionsLabel.font = [UIFont boldSystemFontOfSize:14];
@@ -232,7 +236,7 @@
         pullInstructionsLabel.layer.masksToBounds = YES;
         pullInstructionsLabel.layer.cornerRadius = 6;
         [self addSubview:pullInstructionsLabel];
-
+        
         UILabel * const releaseInstructionsLabel = _releaseInstructionsLabel = [[UILabel alloc] initWithFrame:bounds];
         releaseInstructionsLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
         releaseInstructionsLabel.font = [UIFont boldSystemFontOfSize:14];
@@ -245,7 +249,7 @@
         releaseInstructionsLabel.layer.masksToBounds = YES;
         releaseInstructionsLabel.layer.cornerRadius = 6;
         [self addSubview:releaseInstructionsLabel];
-
+        
         activityIndicatorView.alpha = 0;
         pullInstructionsLabel.alpha = 1;
         releaseInstructionsLabel.alpha = 0;
@@ -259,23 +263,23 @@
 - (void)setState:(STPullToRefreshState)state animated:(BOOL)animated {
     if (_state != state) {
         _state = state;
-
+        
         if (_state == STPullToRefreshStateLoading) {
             [_activityIndicatorView startAnimating];
         }
-
+        
         void(^animations)(void) = ^{
             self->_activityIndicatorView.alpha = (state == STPullToRefreshStateLoading) ? 1 : 0;
             self->_pullInstructionsLabel.alpha = (state == STPullToRefreshStateIdle) ? 1 : 0;
             self->_releaseInstructionsLabel.alpha = (state == STPullToRefreshStateWaitingForRelease) ? 1 : 0;
         };
-
+        
         void(^completion)(BOOL) = ^(BOOL finished) {
             if (self->_state != STPullToRefreshStateLoading) {
                 [self->_activityIndicatorView stopAnimating];
             }
         };
-
+        
         if (animated) {
             [UIView animateWithDuration:animated ? .2 : 0 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:animations completion:completion];
         } else {
