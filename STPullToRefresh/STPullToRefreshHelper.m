@@ -100,10 +100,10 @@
     if (object == scrollView) {
         CGFloat const scrollViewOriginY = contentOffset.y + contentInset.top;
         CGFloat viewOriginY;
-        if (state == STPullToRefreshStateIdle) {
-            viewOriginY = MIN(-viewHeight, scrollViewOriginY);
+        if (state == STPullToRefreshStateLoading) {
+            viewOriginY = scrollViewOriginY - viewHeight;
         } else {
-            viewOriginY = (-viewHeight < scrollViewOriginY) ? scrollViewOriginY - viewHeight : scrollViewOriginY;
+            viewOriginY = MIN(-viewHeight, scrollViewOriginY);
         }
         
         CGFloat viewVisibility;
@@ -124,8 +124,6 @@
         view.center = viewCenter;
         view.alpha = viewVisibility;
         
-
-        
         if ([keyPath isEqualToString:@"contentOffset"]) {
             
             CGFloat const pullThreshold = viewHeight * 2;
@@ -144,7 +142,9 @@
                             } else {
                                 newState = STPullToRefreshStateIdle;
                             }
-                            [self setState:newState animated:NO];
+                            if (state != STPullToRefreshStateLoading) {
+                                [self setState:newState animated:NO];
+                            }
                         } break;
                     }
                 } else if (state == STPullToRefreshStateWaitingForRelease) {
