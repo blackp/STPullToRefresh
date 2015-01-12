@@ -28,6 +28,7 @@
     if ((self = [super init])) {
         _direction = direction;
         _delegate = delegate;
+        _pullToTriggerHeightMultiplier = 1.0;
         
         viewClass = viewClass ?: [STPullToRefreshHelperView class];
         CGFloat const viewHeight = [viewClass naturalHeight];
@@ -126,10 +127,10 @@
         
         if ([keyPath isEqualToString:@"contentOffset"]) {
             
-            CGFloat const pullThreshold = viewHeight * 2;
+            CGFloat const pullThreshold = viewHeight * self.pullToTriggerHeightMultiplier;
             CGFloat const pullDistance = -(contentInset.top + contentOffset.y);
-            if ([view respondsToSelector:@selector(setTriggerProgress:)]) {
-                [view setTriggerProgress:(pullDistance / pullThreshold)];
+            if ([view respondsToSelector:@selector(setTriggerPrimingProgress:)]) {
+                [view setTriggerPrimingProgress:(pullDistance / pullThreshold)];
             }
             
             if (state != STPullToRefreshStateLoading) {
