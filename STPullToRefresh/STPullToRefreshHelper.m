@@ -155,16 +155,18 @@
                     }
                 } else if (state == STPullToRefreshStateWaitingForRelease) {
                     [self setState:STPullToRefreshStateLoading animated:YES];
-                    [self notifyDidTriggerLoad];
+                    [self notifyDidTriggerLoadAtContentOffset:contentOffset];
                 }
             }
         }
     }
 }
 
-- (void)notifyDidTriggerLoad {
+- (void)notifyDidTriggerLoadAtContentOffset:(CGPoint)contentOffset {
     id<STPullToRefreshHelperDelegate> const delegate = self.delegate;
-    if ([delegate respondsToSelector:@selector(pullToRefreshHelperDidTriggerLoad:)]) {
+    if ([delegate respondsToSelector:@selector(pullToRefreshHelperDidTriggerLoad:atContentOffset:)]) {
+        [delegate pullToRefreshHelperDidTriggerLoad:self atContentOffset:contentOffset];
+    } else if ([delegate respondsToSelector:@selector(pullToRefreshHelperDidTriggerLoad:)]) {
         [delegate pullToRefreshHelperDidTriggerLoad:self];
     }
 }

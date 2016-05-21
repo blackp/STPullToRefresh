@@ -24,6 +24,7 @@ typedef enum STPullToRefreshState {
 @protocol STPullToRefreshHelperDelegate <NSObject>
 @optional
 - (void)pullToRefreshHelperDidTriggerLoad:(STPullToRefreshHelper *)helper;
+- (void)pullToRefreshHelperDidTriggerLoad:(STPullToRefreshHelper *)helper atContentOffset:(CGPoint)contentOffset;
 @end
 
 
